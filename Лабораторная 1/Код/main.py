@@ -34,7 +34,7 @@ class FuzzyImplicationTable:
         return self.table.to_string(index=False)
 
 
-class FuzzyDirectConclusion:
+class FuzzyDirectConclusionTable:
     def __init__(self, v: dict, b: dict, fuzzy_implication_table: pd.DataFrame) -> None:
         self.columns = ["Ф(x,y) ∧ B(x)"] + list(v.keys())
         self.table = self.calculate(b, fuzzy_implication_table)
@@ -107,8 +107,8 @@ if __name__ == "__main__":
 
     print(FuzzyImplicationTable(p, v), "\n")
 
-    print(FuzzyDirectConclusion(v, p, FuzzyImplicationTable(p, v).table), "\n")
-    print(FuzzyDirectConclusion(v, p, FuzzyImplicationTable(p, v).table).get_max(), "\n")
+    print(FuzzyDirectConclusionTable(v, p, FuzzyImplicationTable(p, v).table), "\n")
+    print(FuzzyDirectConclusionTable(v, p, FuzzyImplicationTable(p, v).table).get_max(), "\n")
 
-    print(FuzzyDirectConclusion(v, b, FuzzyImplicationTable(p, v).table), "\n")
-    print(FuzzyDirectConclusion(v, b, FuzzyImplicationTable(p, v).table).get_max(), "\n")
+    print(FuzzyDirectConclusionTable(v, b, FuzzyImplicationTable(p, v).table), "\n")
+    print(FuzzyDirectConclusionTable(v, b, FuzzyImplicationTable(p, v).table).get_max(), "\n")
