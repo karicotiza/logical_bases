@@ -13,7 +13,6 @@ class FuzzyImplicationTable:
             for y in v.values():
                 data.append(fuzzy_implication(x, y))
 
-            # noinspection PyTypeChecker
             table = pd.concat(
                 [
                     table,
@@ -73,7 +72,6 @@ class FuzzyDirectConclusionTable:
         result = "{"
         for column in self.table.columns[1:]:
             result += f"({column}, {self.table[column].max()})"
-            # print(column, self.table[column].max())
         return result + "}"
 
     def __str__(self) -> str:
@@ -89,6 +87,7 @@ def triangular_norm(x: float, y: float, mode: str = "gentzen") -> float:
         return max((x + y - 1), 0)
     elif mode == "drastic":
         pass
+        # TODO: Добавить формулу для драстического произведения
     else:
         raise ValueError("Wrong mode")
 
@@ -102,9 +101,9 @@ def fuzzy_implication(x: float, y: float) -> float:
 
 def values_check(p: dict, v: dict, b: dict) -> bool:
     if max(
-        max(p.values()),
-        max(v.values()),
-        max(b.values()),
+            max(p.values()),
+            max(v.values()),
+            max(b.values()),
     ) <= 1 and min(
         min(p.values()),
         min(v.values()),
@@ -112,7 +111,7 @@ def values_check(p: dict, v: dict, b: dict) -> bool:
     ) >= 0:
         return True
     else:
-        raise ValueError("Недопустимые значения")
+        raise ValueError("Wrong value")
 
 
 if __name__ == "__main__":
