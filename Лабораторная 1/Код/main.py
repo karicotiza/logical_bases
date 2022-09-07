@@ -100,10 +100,27 @@ def fuzzy_implication(x: float, y: float) -> float:
         return y
 
 
+def values_check(p: dict, v: dict, b: dict) -> bool:
+    if max(
+        max(p.values()),
+        max(v.values()),
+        max(b.values()),
+    ) <= 1 and min(
+        min(p.values()),
+        min(v.values()),
+        min(b.values()),
+    ) >= 0:
+        return True
+    else:
+        raise ValueError("Недопустимые значения")
+
+
 if __name__ == "__main__":
     p = {"a": 0, "b": 0.3, "c": 1}
     v = {"f": 1, "d": 0.5, "t": 0}
     b = {"a": 0.8, "b": 0.3, "c": 0.9}
+
+    values_check(p, v, b)
 
     print(FuzzyImplicationTable(p, v), "\n")
 
