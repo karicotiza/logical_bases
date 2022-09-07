@@ -1,4 +1,5 @@
 import pandas as pd
+import math
 
 
 class FuzzyImplicationTable:
@@ -78,7 +79,7 @@ class FuzzyDirectConclusionTable:
         return self.table.to_string(index=False)
 
 
-def triangular_norm(x: float, y: float, mode: str = "gentzen") -> float:
+def triangular_norm(x: float, y: float, mode: str = "drastic") -> float:
     if mode == "gentzen":
         return min(x, y)
     elif mode == "godel":
@@ -86,8 +87,12 @@ def triangular_norm(x: float, y: float, mode: str = "gentzen") -> float:
     elif mode == "lukasiewicz":
         return max((x + y - 1), 0)
     elif mode == "drastic":
-        pass
-        # TODO: Добавить формулу для драстического произведения
+        if x == 1:
+            return y
+        if y == 1:
+            return x
+        else:
+            return 0
     else:
         raise ValueError("Wrong mode")
 
