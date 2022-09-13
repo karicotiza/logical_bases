@@ -93,37 +93,89 @@ def triangular_norm(x: float, y: float, mode: str = "drastic") -> float:
         else:
             return 0
     else:
-        raise ValueError("Wrong mode")
+        print("Wrong mode")
 
 
-def fuzzy_implication(x: float, y: float) -> float:
-    if y >= x:
-        return 1
+def fuzzy_implication(x: float, y: float, mode: str = "gentzen") -> float:
+    if mode == "gentzen":
+        if y >= x:
+            return 1
+        else:
+            return y
+    elif mode == "godel":
+        pass
+    elif mode == "lukasiewicz":
+        pass
+    elif mode == "drastic":
+        pass
     else:
-        return y
-
-
-def values_check(p: dict, v: dict, b: dict) -> bool:
-    if max(
-            max(p.values()),
-            max(v.values()),
-            max(b.values()),
-    ) <= 1 and min(
-        min(p.values()),
-        min(v.values()),
-        min(b.values()),
-    ) >= 0:
-        return True
-    else:
-        raise ValueError("Wrong value")
+        print("Wrong mode")
 
 
 if __name__ == "__main__":
-    p = {"a": 0, "b": 0.3, "c": 1}
-    v = {"f": 1, "d": 0.5, "t": 0}
-    b = {"a": 0.8, "b": 0.3, "c": 0.9}
+    p = {}
+    v = {}
+    b = {}
 
-    values_check(p, v, b)
+    print(
+        "Заполнение множества P, вводите пары значений через запятую, по одной паре на строку.\n"
+        "Для завершения введите пустую строку"
+    )
+
+    while True:
+        user_input = str(input("Ввод: ")).replace(" ", "").split(",")
+        if len(user_input) == 2:
+            if 0 <= float(user_input[1]) <= 1:
+                if user_input[0] in p.keys():
+                    print("Значение перезаписано")
+                p[user_input[0]] = float(user_input[1])
+            else:
+                print("Ввод не соответствует правилам")
+        elif len(user_input) == 1 and user_input[0] == "":
+            print("Множество заполнено\n")
+            break
+        else:
+            print("Ввод не соответствует правилам")
+
+    print(
+        "Заполнение множества V, вводите пары значений через запятую, по одной паре на строку.\n"
+        "Для завершения введите пустую строку"
+    )
+
+    while True:
+        user_input = str(input("Ввод: ")).replace(" ", "").split(",")
+        if len(user_input) == 2:
+            if 0 <= float(user_input[1]) <= 1:
+                if user_input[0] in p.keys():
+                    print("Эта пара уже находится в множестве P")
+                else:
+                    if user_input[0] in v.keys():
+                        print("Значение перезаписано")
+                    v[user_input[0]] = float(user_input[1])
+            else:
+                print("Ввод не соответствует правилам")
+        elif len(user_input) == 1 and user_input[0] == "":
+            print("Множество заполнено\n")
+            break
+        else:
+            print("Ввод не соответствует правилам")
+
+    print(
+        "Заполнение множества V, заполните пары."
+    )
+
+    for key, value in p.items():
+        while True:
+            try:
+                user_input = float(input(f"Ввод: {key}, "))
+                if 0 <= user_input <= 1:
+                    b[key] = user_input
+                    break
+                else:
+                    print("Ввод не соответствует правилам")
+            except ValueError:
+                print("Ввод не соответствует правилам")
+    print("Множество заполнено\n")
 
     print(FuzzyImplicationTable(p, v), "\n")
 
