@@ -78,7 +78,7 @@ class FuzzyDirectConclusionTable:
         return self.table.to_string(index=False)
 
 
-def triangular_norm(x: float, y: float, mode: str = "drastic") -> float:
+def triangular_norm(x: float, y: float, mode: str = "gentzen") -> float:
     if mode == "gentzen":
         return min(x, y)
     elif mode == "godel":
@@ -161,7 +161,7 @@ if __name__ == "__main__":
             print("Ввод не соответствует правилам")
 
     print(
-        "Заполнение множества V, заполните пары."
+        "Заполнение множества B, заполните пары."
     )
 
     for key, value in p.items():
