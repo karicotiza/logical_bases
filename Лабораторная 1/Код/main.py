@@ -1,12 +1,15 @@
 import pandas as pd
+import pathlib
+import re
+import sys
 
 
 class FuzzyImplicationTable:
     def __init__(self, p: dict, v: dict) -> None:
         self.columns = ["Ф(x,y)"] + list(v.keys())
-        self.table = self.calculate(p)
+        self.table = self.calculate(p, v)
 
-    def calculate(self, p: dict) -> pd.DataFrame:
+    def calculate(self, p: dict, v: dict) -> pd.DataFrame:
         table = pd.DataFrame()
         for key, x in p.items():
             data = []
@@ -112,75 +115,47 @@ def fuzzy_implication(x: float, y: float, mode: str = "gentzen") -> float:
         print("Wrong mode")
 
 
+def validate(line: str) -> bool:
+    pattern_1 = r"^\(?[a-z]+, [0|1]\)"
+    pattern_2 = r"^\(?[a-z]+, 0\.[1-9]\)"
+
+    if re.match(pattern_1, line) or re.match(pattern_2, line):
+        return True
+
+
+def from_file(read_path: pathlib.Path, write: pathlib.Path,number_of_dicts: int) -> list[dict]:
+    memory = [{} for _ in range(number_of_dicts)]
+
+    to_file(write)
+
+    with read_path.open() as file:
+        counter = 0
+        for index, line in enumerate(file):
+            line = line.replace("\n", "")
+            if validate(line):
+                key, value = line[1:-1].split(", ")
+                memory[counter][key] = float(value)
+            elif len(line) == 0:
+                counter += 1
+            else:
+                raise SyntaxError(f"Wrong syntax at line {index}: {line}")
+    return memory
+
+
+def to_file(write_path: pathlib.Path):
+    sys.stdout = open(write_path, "w", encoding="utf-8")
+
+
 if __name__ == "__main__":
-    p = {}
-    v = {}
-    b = {}
+    try:
+        p_dict, v_dict, b_dict = from_file(pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]), 3)
+    except IndexError:
+        p_dict, v_dict, b_dict = from_file(pathlib.Path("input.txt"), pathlib.Path("output.txt"), 3)
 
-    print(
-        "Заполнение множества P, вводите пары значений через запятую, по одной паре на строку.\n"
-        "Для завершения введите пустую строку"
-    )
+    print(FuzzyImplicationTable(p_dict, v_dict), "\n")
 
-    while True:
-        user_input = str(input("Ввод: ")).replace(" ", "").split(",")
-        if len(user_input) == 2:
-            if 0 <= float(user_input[1]) <= 1:
-                if user_input[0] in p.keys():
-                    print("Значение перезаписано")
-                p[user_input[0]] = float(user_input[1])
-            else:
-                print("Ввод не соответствует правилам")
-        elif len(user_input) == 1 and user_input[0] == "":
-            print("Множество заполнено\n")
-            break
-        else:
-            print("Ввод не соответствует правилам")
+    print(FuzzyDirectConclusionTable(v_dict, p_dict, FuzzyImplicationTable(p_dict, v_dict).table), "\n")
+    print(FuzzyDirectConclusionTable(v_dict, p_dict, FuzzyImplicationTable(p_dict, v_dict).table).get_max(), "\n")
 
-    print(
-        "Заполнение множества V, вводите пары значений через запятую, по одной паре на строку.\n"
-        "Для завершения введите пустую строку"
-    )
-
-    while True:
-        user_input = str(input("Ввод: ")).replace(" ", "").split(",")
-        if len(user_input) == 2:
-            if 0 <= float(user_input[1]) <= 1:
-                if user_input[0] in p.keys():
-                    print("Эта пара уже находится в множестве P")
-                else:
-                    if user_input[0] in v.keys():
-                        print("Значение перезаписано")
-                    v[user_input[0]] = float(user_input[1])
-            else:
-                print("Ввод не соответствует правилам")
-        elif len(user_input) == 1 and user_input[0] == "":
-            print("Множество заполнено\n")
-            break
-        else:
-            print("Ввод не соответствует правилам")
-
-    print(
-        "Заполнение множества B, заполните пары."
-    )
-
-    for key, value in p.items():
-        while True:
-            try:
-                user_input = float(input(f"Ввод: {key}, "))
-                if 0 <= user_input <= 1:
-                    b[key] = user_input
-                    break
-                else:
-                    print("Ввод не соответствует правилам")
-            except ValueError:
-                print("Ввод не соответствует правилам")
-    print("Множество заполнено\n")
-
-    print(FuzzyImplicationTable(p, v), "\n")
-
-    print(FuzzyDirectConclusionTable(v, p, FuzzyImplicationTable(p, v).table), "\n")
-    print(FuzzyDirectConclusionTable(v, p, FuzzyImplicationTable(p, v).table).get_max(), "\n")
-
-    print(FuzzyDirectConclusionTable(v, b, FuzzyImplicationTable(p, v).table), "\n")
-    print(FuzzyDirectConclusionTable(v, b, FuzzyImplicationTable(p, v).table).get_max(), "\n")
+    print(FuzzyDirectConclusionTable(v_dict, b_dict, FuzzyImplicationTable(p_dict, v_dict).table), "\n")
+    print(FuzzyDirectConclusionTable(v_dict, b_dict, FuzzyImplicationTable(p_dict, v_dict).table).get_max(), "\n")
