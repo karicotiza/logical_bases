@@ -123,10 +123,25 @@ def validate(line: str) -> bool:
         return True
 
 
-def from_file(read_path: pathlib.Path, write: pathlib.Path,number_of_dicts: int) -> list[dict]:
-    memory = [{} for _ in range(number_of_dicts)]
+def count_dicts(read_path: pathlib.Path) -> int:
+    with read_path.open() as file:
+        return file.read().count("\n\n") + 1
 
-    to_file(write)
+
+def check_for_double_new_lines(read_path: pathlib.Path) -> None:
+    with read_path.open() as file:
+        try:
+            index = file.read().index("\n\n\n")
+            if index:
+                raise SyntaxError(f"no more than one new line between sets")
+        except ValueError:
+            pass
+
+
+def from_file(read_path: pathlib.Path) -> list[dict]:
+    number_of_dicts = count_dicts(read_path)
+    check_for_double_new_lines(read_path)
+    memory = [{} for _ in range(number_of_dicts)]
 
     with read_path.open() as file:
         counter = 0
@@ -138,7 +153,7 @@ def from_file(read_path: pathlib.Path, write: pathlib.Path,number_of_dicts: int)
             elif len(line) == 0:
                 counter += 1
             else:
-                raise SyntaxError(f"Wrong syntax at line {index}: {line}")
+                raise SyntaxError(f"wrong syntax at line {index}: {line}")
     return memory
 
 
@@ -148,9 +163,11 @@ def to_file(write_path: pathlib.Path):
 
 if __name__ == "__main__":
     try:
-        p_dict, v_dict, b_dict = from_file(pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]), 3)
+        p_dict, v_dict, b_dict = from_file(pathlib.Path(sys.argv[1]))
+        to_file(pathlib.Path(sys.argv[2]))
     except IndexError:
-        p_dict, v_dict, b_dict = from_file(pathlib.Path("input.txt"), pathlib.Path("output.txt"), 3)
+        p_dict, v_dict, b_dict = from_file(pathlib.Path("input2.txt"))
+        to_file(pathlib.Path("output2.txt"))
 
     print(FuzzyImplicationTable(p_dict, v_dict), "\n")
 
