@@ -74,8 +74,8 @@ class FuzzyDirectConclusionTable:
     def get_max(self) -> str:
         result = "{"
         for column in self.table.columns[1:]:
-            result += f"({column}, {self.table[column].max()})"
-        return result + "}"
+            result += f"({column}, {self.table[column].max()}),"
+        return result[:-1] + "}"
 
     def __str__(self) -> str:
         return self.table.to_string(index=False)
@@ -138,6 +138,14 @@ def check_for_double_new_lines(read_path: pathlib.Path) -> None:
             pass
 
 
+def check_for_keys(p: dict, b: dict) -> None:
+    for index in range(len(p)):
+        if not list(p.keys())[index] == list(b.keys())[index]:
+            raise SyntaxError("wrong keys order in b set")
+    if not p.keys() == b.keys():
+        raise ValueError("keys between p and b sets not equal")
+
+
 def from_file(read_path: pathlib.Path) -> list[dict]:
     number_of_dicts = count_dicts(read_path)
     check_for_double_new_lines(read_path)
@@ -154,6 +162,9 @@ def from_file(read_path: pathlib.Path) -> list[dict]:
                 counter += 1
             else:
                 raise SyntaxError(f"wrong syntax at line {index}: {line}")
+
+    check_for_keys(memory[0], memory[2])
+
     return memory
 
 
@@ -166,8 +177,8 @@ if __name__ == "__main__":
         p_dict, v_dict, b_dict = from_file(pathlib.Path(sys.argv[1]))
         to_file(pathlib.Path(sys.argv[2]))
     except IndexError:
-        p_dict, v_dict, b_dict = from_file(pathlib.Path("input2.txt"))
-        to_file(pathlib.Path("output2.txt"))
+        p_dict, v_dict, b_dict = from_file(pathlib.Path("input.txt"))
+        to_file(pathlib.Path("output.txt"))
 
     print(FuzzyImplicationTable(p_dict, v_dict), "\n")
 
