@@ -3,12 +3,12 @@ from file import File
 from equation_solver import EquationSolver
 
 if __name__ == "__main__":
-    result = EquationSolver.solve_system(
-        EquationSystem(
-            File("data/input.txt")
-        )
-    )
+    file = File("data/input.txt")
+    equation_system = EquationSystem(file)
+    result = EquationSolver.solve_system(equation_system)
 
-    result = "(" + str(" /\\ ").join(result) + ")"
-
+    if result:
+        result = "(" + str(" /\\ ").join(result) + ")"
+    else:
+        result = "Нет верного ответа"
     print(result)
