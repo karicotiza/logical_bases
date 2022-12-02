@@ -4,6 +4,9 @@ import itertools
 from equation_system import EquationSystem
 from log_unit import LogUnit
 
+# Если нужно проверить скорость перебора
+# from tqdm import tqdm
+
 
 class EquationSolver:
     """
@@ -13,7 +16,7 @@ class EquationSolver:
     log_unit = LogUnit
 
     @staticmethod
-    def solve_system(equation_system_: EquationSystem) -> [list[str] | str]:
+    def solve_system(equation_system_: EquationSystem) -> [list[str] | None]:
         """
         Основной метод класса,
         решает систему уравнений
@@ -21,19 +24,22 @@ class EquationSolver:
         :param equation_system_: Система уравнений.
         :return: Если есть решение - возвращает список
         с допустимыми значениями переменных. Если
-        решения нет возвращает строку со значением
-        "Нет ответа"
+        решения нет возвращает None
         """
 
         equations = EquationSolver.__sort_equations(equation_system_)
         variables = {key: set() for key in equation_system_.get_variables()[1]}
 
         equation: dict
+
+        # Если нужно проверить скорость перебора
+        # for equation in tqdm(equations, desc="Идёт перебор"):
+
         for equation in equations:
             variables = EquationSolver.get_brute_force_range(equation, variables)
             variables = EquationSolver.adjust_range_based_on_solution_of_equation(equation, variables)
             if not variables:
-                return "Нет ответа"
+                return None
 
         return [
             f"({min(value)} <= {key} <= {max(value)})"
@@ -76,7 +82,7 @@ class EquationSolver:
                     variables[variable] = set(
                         number / (10 ** equation_["precision"])
                         for number
-                        in range(0, 11 ** equation_["precision"])
+                        in range(0, (10 ** equation_["precision"]) + 1)
                     )
 
                 else:
@@ -147,15 +153,18 @@ class EquationSolver:
         :return: множество верных диапазонов
         """
 
+        # print(variables)
+
+        print(max(variables["A(x1)"]))
+
         memory = []
 
         for variable in variables.keys():
             if variable in equation_["code"]:
                 code = equation_["code"]
                 for value in variables[variable]:
-                    code = code.replace(variable, "LogUnit(" + str(value) + ")")
 
-                    if eval(code):
+                    if eval(code.replace(variable, "LogUnit(" + str(value) + ")")):
                         memory.append({variable: value})
 
         return memory
