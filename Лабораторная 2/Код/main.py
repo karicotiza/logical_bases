@@ -8,7 +8,16 @@ if __name__ == "__main__":
     result = EquationSolver.solve_system(equation_system)
 
     if result:
-        result = "(" + str(" /\\ ").join(result) + ")"
+        print(
+            f"((A(x1) = {result[0][0]}) /\\ ({result[0][1][0]} <= A(x2) <= {result[0][1][1]})"
+            f" \\/ "
+            f"({result[1][1][0]} <= A(x1) <= {result[1][1][1]}) /\\ (A(x2) = {result[1][0]}))"
+        )
     else:
-        result = "Нет верного ответа"
-    print(result)
+        print("Нет решения")
+
+    # if result:
+    #     result = "(" + str(" /\\ ").join(result) + ")"
+    # else:
+    #     result = "Нет верного ответа"
+    # print(result)
