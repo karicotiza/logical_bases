@@ -14,12 +14,12 @@ class EquationSolver:
         for index, equation_ in enumerate(equation_system_.get_equations(), start=0):
             left_result, right_result = EquationSolver.solve_equation(equation_)
             if not left_result and not right_result:
-                return "A"
+                return None
 
             if left_result is None:
-                left_result = [1.0, [0.0, 1.0]]
+                left_result = [1.0, [right_result[0], right_result[0]]]
             if right_result is None:
-                right_result = [1.0, [0.0, 1.0]]
+                right_result = [1.0, [left_result[0], left_result[0]]]
 
             if not index:
                 left_side = left_result
@@ -29,23 +29,21 @@ class EquationSolver:
                     if left_result[0] < left_side[0]:
                         left_side = left_result
                 else:
-                    # left_side = [None, [None, None]]
                     return None
 
                 if right_result[0] == right_side[0] or right_result[1][1] == right_side[1][1]:
                     if right_result[0] < right_side[0]:
                         right_side = right_result
                 else:
-                    # right_side = [None, [None, None]]
                     return None
 
-            # print(left_result, right_result)
-            # print("left_side", left_side)
-            # print("right_side", right_side)
-            # print()
+        # Не тестировал, может испортить ответ
+        # if left_side[0] < left_side[1][1]:
+        #     left_side[1][0] = left_side[1][1]
+        if right_side[0] >= right_side[1][1]:
+            right_side[1][0] = right_side[1][1]
 
         return left_side, right_side
-        # print(left_side, right_side)
 
     @staticmethod
     def solve_equation(equation_: str):
@@ -56,7 +54,7 @@ class EquationSolver:
         answer = float(split[8])
 
         # Первая строка дерева
-        # print(f"{equation_:^80}")
+        print(f"{equation_:^120}")
 
         # Ответ есть. Хотя бы одна часть при умножении даст верный ответ
         if max(left_constant, right_constant) >= answer:
@@ -93,30 +91,30 @@ class EquationSolver:
                 right_result = None
 
             # Вторая строка дерева
-            # print(
-            #     f"{'A(x1) = ' + str(left_max):^40}",
-            #     f"{'A(x2) = ' + str(right_max):^40}"
-            # )
+            print(
+                f"{'A(x1) = ' + str(left_max):^60}",
+                f"{'A(x2) = ' + str(right_max):^60}"
+            )
 
             # Третья строка дерева
-            # string = ''
-            #
-            # if left_result:
-            #     string += f"{'A(x1) = ' + str(left_result[0]) + ', A(x2) = ' + str(left_result[1]):^40}"
-            # else:
-            #     string += f"{' ':^40}"
-            # if right_result:
-            #     string += f"{'A(x1) = ' + str(right_result[1]) + ', A(x2) = ' + str(right_result[0]):^40}"
-            #
-            # print(string)
-            # print()
+            string = ''
+
+            if left_result:
+                string += f"{'A(x1) = ' + str(left_result[0]) + ', A(x2) = ' + str(left_result[1]):^60}"
+            else:
+                string += f"{' ':^60}"
+            if right_result:
+                string += f"{'A(x1) = ' + str(right_result[1]) + ', A(x2) = ' + str(right_result[0]):^60}"
+
+            print(string)
+            print()
 
             return left_result, right_result
 
         # Ответ не может быть получен. Максимум из левой части всегда будет меньше ответа
         else:
             # Вторая строка дерева
-            # print(f"{'A(x1) = None':^40} {'A(x2) = None':^40}")
-            # print()
+            print(f"{'A(x1) = None':^60} {'A(x2) = None':^60}")
+            print()
 
             return None, None
